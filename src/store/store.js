@@ -33,21 +33,28 @@ const state = {
 }
 
 const mutations = {
-  selectPlayer (state, {value}) {
-    state.selectedPlayer = value
+  selectPlayer (state, id) {
+    Vue.set (state, 'selectedPlayer', id)
   },
-  updatePlayer (state, {index, stepValue}) {
-    state.players[ index ].score += stepValue
+  updatePlayer (state, {index, step}) {
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    state.players[ index ].score += step
+    state.players[ index ].updated = `${month}/${day}/${year}`
+
+    Vue.set (state, 'players', state.players)
+
   },
   removePlayer (state, id) {
-    console.log ('remove mut', id)
-
     const newList = state.players.filter( player => player.id != id)
-    console.log ('remove mut', newList)
-
-    console.log ('starte list', state.players)
     Vue.set (state, 'players', newList)
-    console.log ('starte list', state.players)
+  },
+  addPlayer (state, player) {
+    const newList = state.players.concat( player )
+    Vue.set (state, 'players', newList)
+
   }
 }
 
@@ -56,11 +63,12 @@ const getters = {
 }
 
 const actions = {
-  selectPlayer : ({ commit }, {value}) => commit ('selectPlayer', {value}),
-  updatePlayer : ({ commit }, {index, stepValue}) => commit ('updatePlayer', {index, stepValue}),
+  selectPlayer : ({ commit }, id) => commit ('selectPlayer', id),
+  updatePlayer : ({ commit }, {index, step}) => commit ('updatePlayer', {index, step}),
   removePlayer : ({ commit }, id) => {
     console.log ('remove', id)
-    commit ('removePlayer', id)}
+    commit ('removePlayer', id)},
+  addPlayer : ({commit}, player) => commit('addPlayer', player)
 }
 
 export default new Vuex.Store({
